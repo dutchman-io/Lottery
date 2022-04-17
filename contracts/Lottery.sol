@@ -1,8 +1,9 @@
 //SPDX-License-Identifier:MIT
 pragma solidity ^0.8.0;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import '@chainlink/contracts/src/v0.8/VRFConsumerBase.sol';
 
-contract Lottery {
+contract Lottery is VRFConsumerBase, Ownable {
 
     address payable[] public players;
     uint256 usdEntryFee;
@@ -16,20 +17,23 @@ contract Lottery {
 
     LotteryState public lotteryState;
 
-    constructor(address _priceFeedAddress)public{
-        usdEntryFee =50 *(10 **18);
-        ethUsdPriceFeed = AggregatorV3Interface(_priceFeedAddress);
-        owner = msg.sender;
+    constructor(address _priceFeedAddress, address _vrfCoorfinator, address _link )
+        public  VRFConsumerBase(_vrfCoordinator)
+    {
+         usdEntryFee =50 *(10 **18);
+         ethUsdPriceFeed = AggregatorV3Interface(_priceFeedAddress);
+         owner = msg.sender;
 
     }
 
+
     modifier onlyOwner{
-        require(msg.sender == owner)
+        require(msg.sender == owner);
     }
 
     function enter() public payable {
         require(lotteryState = LotteryState.OPEN);
-        require(msg.value >= getEntranceFee(), "You need a minimum of 50 USD to enter lottery")
+        require(msg.value >= getEntranceFee(), "You need a minimum of 50 USD to enter lottery");
       // players.push(msg.sender);
     }
 
@@ -56,7 +60,7 @@ contract Lottery {
         require(lotteryState == LotteryState.OPEN);
         
 
-        uint256(
+        //uint256()
            
 
 
