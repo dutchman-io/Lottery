@@ -17,7 +17,7 @@ contract Lottery is VRFConsumerBase{
 
     LotteryState public lotteryState;
 
-    constructor(address _priceFeedAddress, address _vrfCoorfinator, address _link )
+    constructor(address _priceFeedAddress, address _vrfCoordinator, address _link )
         public  VRFConsumerBase(_vrfCoordinator)
     {
          usdEntryFee =50 *(10 **18);
@@ -66,9 +66,9 @@ contract Lottery is VRFConsumerBase{
 
 
 
-        lottertState = LotteryState.CALCULATING_WINNER;
+        lotteryState = LotteryState.CALCULATING_WINNER;
     }
-    function fufillRandomness(bytes32 _requestId, uint _randomness) internal overide{
+    function fufillRandomness(bytes32 _requestId, uint _randomness) internal override{
         require(lotteryState == LotteryState.CALCULATING_WINNER);
         require(_randomness > 0, "random-Value-not-found");
     }
