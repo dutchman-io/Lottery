@@ -7,27 +7,34 @@ import '@chainlink/contracts/src/v0.8/VRFConsumerBase.sol';
 contract Lottery is VRFConsumerBase{
 
     address payable[] public players;
-    uint256 usdEntryFee;
+    uint256 public usdEntryFee;
+    uint256 public randomness;
+    uint256 public indexOfWinner;
+    address payable recentWinner;
+    address public owner;
     AggregatorV3Interface internal ethUsdPriceFeed;
-    address owner;
+
     enum LotteryState {
         OPEN,
         CLOSED,
         CALCULATING_WINNER
     }
-	uint256 fee;
+	uint256 public fee;
     LotteryState public lotteryState;
+    bytes32 public keyHash;
 
     constructor(address _priceFeedAddress,
 	address _vrfCoordinator,
 	address _link,
-	uint256 _fee
+	uint256 _fee,
+    bytes32 _keyHash
 
 	) public VRFConsumerBase(_vrfCoordinator, _link){
         usdEntryFee =50 *(10 **18);
         ethUsdPriceFeed = AggregatorV3Interface(_priceFeedAddress);
         owner = msg.sender;
         fee = _fee;
+        keyHash = _keyHash;
     }
 
 
@@ -62,7 +69,9 @@ contract Lottery is VRFConsumerBase{
     }
 
     function end() public onlyOwner{
-        require(lotteryState == LotteryState.OPEN);
+        require(lotteryState == LotteryState.CALCULATING_WINNER);
+        bytes32 requestId = requestRandomness(keyHash, fee);
+
         
 
         //uint256()
@@ -75,6 +84,11 @@ contract Lottery is VRFConsumerBase{
     function fulfillRandomness(bytes32 _requestId, uint _randomness) internal override{
         require(lotteryState == LotteryState.CALCULATING_WINNER);
         require(_randomness > 0, "random-Value-not-found");
+        indexOfWinner = _randomness % players.length;
+        recentWinner = players[indexOfWinner];
+        recentWinner.transfer(address(this).balance);
+        players = new address payable[](0);
+        lotteryState = LotteryState.CLOSED;
+        randomness = _randomness;
     }
-
 }
