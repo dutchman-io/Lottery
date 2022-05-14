@@ -3,9 +3,9 @@ pragma solidity ^0.8.0;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import '@chainlink/contracts/src/v0.8/VRFConsumerBase.sol';
 
-contract Lottery is VRFConsumerBase, Ownable {
+contract Lottery is VRFConsumerBase{
 
-    address payable[] public players;
+    address payable [] public players;
     uint256 usdEntryFee;
     AggregatorV3Interface internal ethUsdPriceFeed;
     address owner;
@@ -29,12 +29,13 @@ contract Lottery is VRFConsumerBase, Ownable {
 
     modifier onlyOwner{
         require(msg.sender == owner);
+        _;
     }
 
     function enter() public payable {
         require(lotteryState = LotteryState.OPEN);
         require(msg.value >= getEntranceFee(), "You need a minimum of 50 USD to enter lottery");
-      // players.push(msg.sender);
+        players.push(msg.sender);
     }
 
 
@@ -69,6 +70,7 @@ contract Lottery is VRFConsumerBase, Ownable {
     }
     function fufillRandomness(bytes32 _requestId, uint _randomness) internal overide{
         require(lotteryState == LotteryState.CALCULATING_WINNER);
+        require(_randomness > 0, "random-Value-not-found");
     }
 
 }
