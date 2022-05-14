@@ -67,4 +67,8 @@ contract Lottery is VRFConsumerBase, Ownable {
 
         lottertState = LotteryState.CALCULATING_WINNER;
     }
+    function fufillRandomness(bytes32 _requestId, uint _randomness) internal overide{
+        require(lotteryState == LotteryState.CALCULATING_WINNER);
+    }
+
 }
