@@ -1,11 +1,12 @@
 //SPDX-License-Identifier:MIT
 pragma solidity ^0.8.0;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import '@chainlink/contracts/src/v0.8/VRFConsumerBase.sol';
 
 contract Lottery is VRFConsumerBase{
 
-    address payable [] public players;
+    address payable[] public players;
     uint256 usdEntryFee;
     AggregatorV3Interface internal ethUsdPriceFeed;
     address owner;
@@ -17,8 +18,8 @@ contract Lottery is VRFConsumerBase{
 
     LotteryState public lotteryState;
 
-    constructor(address _priceFeedAddress, address _vrfCoordinator, address _link )
-        public  VRFConsumerBase(_vrfCoordinator)
+    constructor(address _priceFeedAddress, address _vrfCoordinator, address _link)
+	 public VRFConsumerBase(_vrfCoordinator, _link)
     {
          usdEntryFee =50 *(10 **18);
          ethUsdPriceFeed = AggregatorV3Interface(_priceFeedAddress);
@@ -33,9 +34,9 @@ contract Lottery is VRFConsumerBase{
     }
 
     function enter() public payable {
-        require(lotteryState = LotteryState.OPEN);
+        require(lotteryState == LotteryState.OPEN);
         require(msg.value >= getEntranceFee(), "You need a minimum of 50 USD to enter lottery");
-        players.push(msg.sender);
+        players.push(payable(msg.sender));
     }
 
 
@@ -68,7 +69,7 @@ contract Lottery is VRFConsumerBase{
 
         lotteryState = LotteryState.CALCULATING_WINNER;
     }
-    function fufillRandomness(bytes32 _requestId, uint _randomness) internal override{
+    function fulfillRandomness(bytes32 _requestId, uint _randomness) internal override{
         require(lotteryState == LotteryState.CALCULATING_WINNER);
         require(_randomness > 0, "random-Value-not-found");
     }
