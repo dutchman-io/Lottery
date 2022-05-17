@@ -3,7 +3,11 @@ from brownie import accounts, network, Lottery
 
 def deploy_lottery():
     account = get_account
-    Lottery =Lottery.deploy()
+    Lottery =Lottery.deploy(
+
+
+
+            )
 
 def main():
     deploy_lottery()
