@@ -1,4 +1,4 @@
-from brownie import network, config, accounts, MockV3Aggregator
+from brownie import network, config, accounts, MockV3Aggregator, Contract
 from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
@@ -16,11 +16,43 @@ def get_account():
         return accounts[0]
     else:
         return accounts.add(config["wallets"]["from_key"])
+contract_to_mock = {
+        "eth_usd_price_feed" : MockV3Aggregator
+        }
+def get_contracts(contract_name):
+    """
+    This is a contract that will get the contract address from the brownie config
+    if defined, otherwise it will deploy with mock version of the contract and 
+    return that contract adderss.
+        args : contract name(string)
+        Returns : brownie.network.contract.projectContract: The most recently deployed contract version.
 
+    """
+   contract_type = contract_to_mock[contract_name]
+   if network.show_active() in  LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+       if len(contract_type) <= 0:
+           deploy_mock()
+           contract = contract_type[-1]
+           #MockV3Aggregator[-1]
+        else:
+            contract_adderss = config["networks"][network.show_active()][contract_name]
+            #address
+            #Abi
+            contract = Contract.from_abi(
+                    contract_type._name, contract_address, contract_type.abi
+             )
+            #MockV3Aggregator
+            return contract
 
-def deploy_mocks():
+def deploy_mocks(decimal = DECIMALS, initial_value = STARTING_PRICE):
+    account = get_account()
     print(f"The active network is {network.show_active()}")
-    print("Deploying Mocks...")
     if len(MockV3Aggregator) <= 0:
-        MockV3Aggregator.deploy(DECIMALS, STARTING_PRICE, {"from": get_account()})
+        print("Deploying Mocks...")
+       #mock_price_feed = 
+       MockV3Aggregator.deploy(
+               decimal, initial_value, {"from": get_account()
+                }
+        )
+        
     print("Mocks Deployed!")

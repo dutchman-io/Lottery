@@ -5,5 +5,11 @@ compiler:
         remappings:
           - "@chainlink=smartcontractkit/chainlink@1.4.1"
 networks:
-    mainnet-fork:
-        eth_usd_price_feed: '0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419'
+  default: development
+  rinkeby:
+    vrf_coordinator: "0x6168499c0cFfCaCD319c818142124B7A15E857ab"
+  
+  mainnet-fork:
+      eth_usd_price_feed: '0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419'
+  wallets:
+    from_key: $(PRIVATE_KEY)
