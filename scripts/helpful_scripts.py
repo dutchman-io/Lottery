@@ -1,4 +1,4 @@
-from brownie import network, config, accounts, MockV3Aggregator, Contract
+from brownie import network, config, accounts, MockV3Aggregator, VRFCoordinatorV2Mock, Contract, LinkToken
 from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
@@ -17,23 +17,24 @@ def get_account():
     else:
         return accounts.add(config["wallets"]["from_key"])
 contract_to_mock = {
-        "eth_usd_price_feed" : MockV3Aggregator
+        "eth_usd_price_feed" : MockV3Aggregator,
+        'vrf_coordinator' :VRFCoordinatorMock,
+        'link_token' : LinkToken
         }
 def get_contracts(contract_name):
     """
     This is a contract that will get the contract address from the brownie config
     if defined, otherwise it will deploy with mock version of the contract and 
     return that contract adderss.
-        args : contract name(string)
-        Returns : brownie.network.contract.projectContract: The most recently deployed contract version.
-
+    args : contract name(string)
+    Returns : brownie.network.contract.projectContract: The most recently deployed contract version.
     """
-   contract_type = contract_to_mock[contract_name]
-   if network.show_active() in  LOCAL_BLOCKCHAIN_ENVIRONMENTS:
-       if len(contract_type) <= 0:
-           deploy_mock()
-           contract = contract_type[-1]
-           #MockV3Aggregator[-1]
+    contract_type = contract_to_mock[contract_name]
+    if network.show_active() in  LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        if len(contract_type) <= 0:
+            deploy_mock()
+            contract = contract_type[-1]
+            #MockV3Aggregator[-1]
         else:
             contract_adderss = config["networks"][network.show_active()][contract_name]
             #address
@@ -49,8 +50,8 @@ def deploy_mocks(decimal = DECIMALS, initial_value = STARTING_PRICE):
     print(f"The active network is {network.show_active()}")
     if len(MockV3Aggregator) <= 0:
         print("Deploying Mocks...")
-       #mock_price_feed = 
-       MockV3Aggregator.deploy(
+        #mock_price_feed = 
+        MockV3Aggregator.deploy(
                decimal, initial_value, {"from": get_account()
                 }
         )
