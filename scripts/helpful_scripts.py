@@ -18,7 +18,7 @@ def get_account():
         return accounts.add(config["wallets"]["from_key"])
 contract_to_mock = {
         "eth_usd_price_feed" : MockV3Aggregator,
-        'vrf_coordinator' :VRFCoordinatorMock,
+        'vrf_coordinator' :VRFCoordinatorV2Mock,
         'link_token' : LinkToken
         }
 def get_contracts(contract_name):

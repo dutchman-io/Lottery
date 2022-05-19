@@ -5,7 +5,7 @@ import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
-contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
+abstract contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   uint96 public immutable BASE_FEE;
   uint96 public immutable GAS_PRICE_LINK;
 
@@ -198,6 +198,3 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
     revert("not implemented");
   }
 }
-    verify: False
-  development:
-    verify: False
