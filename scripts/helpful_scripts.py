@@ -1,4 +1,4 @@
-from brownie import network, config, accounts, MockV3Aggregator, VRFCoordinatorV2Mock, Contract, LinkToken
+from brownie import network, config, accounts, MockV3Aggregator, VRFCoordinatorMock, Contract, LinkToken
 from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
@@ -18,10 +18,10 @@ def get_account():
         return accounts.add(config["wallets"]["from_key"])
 contract_to_mock = {
         "eth_usd_price_feed" : MockV3Aggregator,
-        'vrf_coordinator' :VRFCoordinatorV2Mock,
+        'vrf_coordinator' :VRFCoordinatorMock,
         'link_token' : LinkToken
         }
-def get_contracts(contract_name):
+def get_contract(contract_name):
     """
     This is a contract that will get the contract address from the brownie config
     if defined, otherwise it will deploy with mock version of the contract and 
