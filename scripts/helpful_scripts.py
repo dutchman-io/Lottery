@@ -32,7 +32,7 @@ def get_contract(contract_name):
     contract_type = contract_to_mock[contract_name]
     if network.show_active() in  LOCAL_BLOCKCHAIN_ENVIRONMENTS:
         if len(contract_type) <= 0:
-            deploy_mock()
+            deploy_mocks()
             contract = contract_type[-1]
             #MockV3Aggregator[-1]
         else:
