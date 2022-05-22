@@ -53,5 +53,5 @@ def deploy_mocks(decimal = DECIMALS, initial_value = STARTING_PRICE):
         #mock_price_feed = 
         MockV3Aggregator.deploy(decimal, initial_value, {"from" : account})
         link_token = LinkToken.deploy({'from': account})
-        VRFCoordinator.deploy(link_token.address, {'from' : account})
+        VRFCoordinatorMock.deploy(link_token.address, {'from' : account})
     print("Mocks Deployed!")
