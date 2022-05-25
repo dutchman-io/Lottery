@@ -8,17 +8,25 @@ DECIMALS = 8
 STARTING_PRICE = 200000000000
 
 
-def get_account():
+def get_account(Index = None, Id = None):
+    #accounts(0)
+    #accounts.add('env')
+    #accounts.load('id')
+    if Index:
+        return accounts[Index]
+    if Id:
+        return accounts.load(Id)
     if (
         network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS
         or network.show_active() in FORKED_LOCAL_ENVIRONMENTS
     ):
         return accounts[0]
-    else:
-        return accounts.add(config["wallets"]["from_key"])
+    
+    return accounts.add(config["wallets"]["from_key"])
+
 contract_to_mock = {
-        "eth_usd_price_feed" : MockV3Aggregator,
-        'vrf_coordinator' :VRFCoordinatorMock,
+        'eth_usd_price_feed' : MockV3Aggregator,
+        'vrf_coordinator' : VRFCoordinatorMock,
         'link_token' : LinkToken
         }
 def get_contract(contract_name):
@@ -36,13 +44,13 @@ def get_contract(contract_name):
             contract = contract_type[-1]
             #MockV3Aggregator[-1]
         else:
-            contract_adderss = config["networks"][network.show_active()][contract_name]
+            contract_address = config["networks"][network.show_active()][contract_name]
             #address
             #Abi
             contract = Contract.from_abi(
                     contract_type._name, contract_address, contract_type.abi
              )
-            #MockV3Aggregator
+            #MockV3Aggregator.abi
             return contract
 
 def deploy_mocks(decimal = DECIMALS, initial_value = STARTING_PRICE):

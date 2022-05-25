@@ -13,7 +13,16 @@ def deploy_lottery():
             publish_source = ['networks'][network.show_active()].get('verify', False)
             )
     print('Deployed lottery!')
-    
+
+def start_lottery():
+    account = get_account()
+    lottery = Lottery[-1]
+    starting_tx = lottery.start({'from' : account})
+    starting_tx.wait(1)
+    print('lottery has started')
+
+
 def main():
     deploy_lottery()
+    start_lottery()
 
