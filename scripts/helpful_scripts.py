@@ -1,4 +1,12 @@
-from brownie import network, config, accounts, MockV3Aggregator, VRFCoordinatorMock, Contract, LinkToken
+from brownie import(
+    network,
+    config,
+    accounts,
+    MockV3Aggregator,
+    VRFCoordinatorMock,
+    LinkToken,
+    Contract
+)
 from web3 import Web3
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
@@ -8,27 +16,35 @@ DECIMALS = 8
 STARTING_PRICE = 200000000000
 
 
-def get_account(Index = None, Id = None):
+def get_account(Index = None, Id= None):
     #accounts(0)
     #accounts.add('env')
     #accounts.load('id')
-    if Index:
+ 
+    if Index is not None:
+        print(1)
         return accounts[Index]
-    if Id:
+
+    if Id is not None:
+        print(2)
         return accounts.load(Id)
+
     if (
         network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS
         or network.show_active() in FORKED_LOCAL_ENVIRONMENTS
     ):
+        print(3)
         return accounts[0]
-    
+    print('getting from brownie config')
     return accounts.add(config["wallets"]["from_key"])
 
 contract_to_mock = {
         'eth_usd_price_feed' : MockV3Aggregator,
-        'vrf_coordinator' : VRFCoordinatorMock,
-        'link_token' : LinkToken
-        }
+        "vrf_coordinator" : VRFCoordinatorMock,
+        'link_token' : LinkToken,
+}
+
+
 def get_contract(contract_name):
     """
     This is a contract that will get the contract address from the brownie config
@@ -38,26 +54,31 @@ def get_contract(contract_name):
     Returns : brownie.network.contract.projectContract: The most recently deployed contract version.
     """
     contract_type = contract_to_mock[contract_name]
+    print(f'2 {network.show_active()}')
     if network.show_active() in  LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        #print(f'The network is {network.show_active()}')
         if len(contract_type) <= 0:
+            print('Mocks is deploying')
             deploy_mocks()
-            contract = contract_type[-1]
-            #MockV3Aggregator[-1]
-        else:
-            contract_address = config["networks"][network.show_active()][contract_name]
-            #address
-            #Abi
-            contract = Contract.from_abi(
-                    contract_type._name, contract_address, contract_type.abi
-             )
-            #MockV3Aggregator.abi
-            return contract
+        contract = contract_type[-1]
+        #MockV3Aggregator[-1]
+    else:
+        print(f'The networks is {network.show_active()}')
+        print('connecting to mocks')
+        contract_address = config["networks"][network.show_active()][contract_name]
+        #address
+        #address
+        contract = Contract.from_abi(
+            contract_type._name, contract_address, contract_type.abi
+         )
+        #MockV3Aggregator.abi
+    return contract
 
 def deploy_mocks(decimal = DECIMALS, initial_value = STARTING_PRICE):
     account = get_account()
     print(f"The active network is {network.show_active()}")
     if len(MockV3Aggregator) <= 0:
-        print("Deploying Mocks...")
+        #print("Deploying Mocks...")
         #mock_price_feed = 
         MockV3Aggregator.deploy(decimal, initial_value, {"from" : account})
         link_token = LinkToken.deploy({'from': account})
