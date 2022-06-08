@@ -5,7 +5,8 @@ from brownie import(
     MockV3Aggregator,
     VRFCoordinatorMock,
     LinkToken,
-    Contract
+    Contract,
+    interface,
 )
 from web3 import Web3
 
@@ -22,18 +23,18 @@ def get_account(Index = None, Id= None):
     #accounts.load('id')
  
     if Index is not None:
-        print(1)
+        #print(1)
         return accounts[Index]
 
     if Id is not None:
-        print(2)
+        # print(2)
         return accounts.load(Id)
 
     if (
         network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS
         or network.show_active() in FORKED_LOCAL_ENVIRONMENTS
     ):
-        print(3)
+        # print(3)
         return accounts[0]
     print('getting from brownie config')
     return accounts.add(config["wallets"]["from_key"])
@@ -56,7 +57,7 @@ def get_contract(contract_name):
     contract_type = contract_to_mock[contract_name]
     print(f'2 {network.show_active()}')
     if network.show_active() in  LOCAL_BLOCKCHAIN_ENVIRONMENTS:
-        #print(f'The network is {network.show_active()}')
+        print(f'The network is {network.show_active()}')
         if len(contract_type) <= 0:
             print('Mocks is deploying')
             deploy_mocks()
@@ -84,3 +85,21 @@ def deploy_mocks(decimal = DECIMALS, initial_value = STARTING_PRICE):
         link_token = LinkToken.deploy({'from': account})
         VRFCoordinatorMock.deploy(link_token.address, {'from' : account})
     print("Mocks Deployed!")
+
+def fund_with_link(contract_address, account =None, link_token = None, Amount = None):
+    amount = config['networks'][network.show_active()]['fee']
+    #print("e", amount)
+
+    account = account if account else get_account()
+    print(account)
+    link_token = link_token if link_token else get_contract("link_token")
+    print(contract_address, account, link_token, amount )
+
+    #tx = link_token.transfer(contract_address, amount, {'from':account})
+    
+    link_token_contract = interface.LinkTokenInterface(link_token.address)
+    tx = link_token_contract.transfer(contact_address, amount, {'from': account})
+    
+    tx.wait(1)
+    print('Funding Contract')
+
