@@ -10,7 +10,7 @@ contract Lottery is VRFConsumerBase{
     uint256 public usdEntryFee;
     uint256 public randomness;
     uint256 public indexOfWinner;
-    address payable recentWinner;
+    address payable public recentWinner;
     address public owner;
     AggregatorV3Interface internal ethUsdPriceFeed;
 

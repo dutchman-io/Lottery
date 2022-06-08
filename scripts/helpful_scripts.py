@@ -98,7 +98,7 @@ def fund_with_link(contract_address, account =None, link_token = None, Amount = 
     #tx = link_token.transfer(contract_address, amount, {'from':account})
     
     link_token_contract = interface.LinkTokenInterface(link_token.address)
-    tx = link_token_contract.transfer(contact_address, amount, {'from': account})
+    tx = link_token_contract.transfer(contract_address, amount, {'from': account})
     
     tx.wait(1)
     print('Funding Contract')
